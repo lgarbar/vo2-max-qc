@@ -1,0 +1,11 @@
+name: vo2-max-qc
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - pandas=2.2.2
+  - pygame=2.5.2
+  - matplotlib=3.8.4
+  - pip:
+    - pydub==0.25.1
+    - keyboard==0.13.5

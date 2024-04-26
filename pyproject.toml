@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "vo2-max-qc"
+version = "0.1.0"
+description = ""
+authors = ["lgarbar"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "^2.2.2"
+pydub = "^0.25.1"
+pygame = "^2.5.2"
+matplotlib = "^3.8.4"
+keyboard = "^0.13.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
