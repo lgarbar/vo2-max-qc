@@ -11,6 +11,11 @@ class VO2_QC:
         self.root = tk.Tk()
         self.root.title("VO2 Quality Control")
 
+        # Folder paths
+        self.ptp_num = None
+        self.folder_path = None
+        self.edited_path = None
+
         # Create GUI components
         self.tree = ttk.Treeview(self.root, columns=('Value',), show='headings')  # Show only headings, no empty column
         self.tree.heading('Value', text='Value')
@@ -36,17 +41,17 @@ class VO2_QC:
 
     def import_data(self):
         initial_dir = os.path.dirname(os.path.realpath(__file__))
-        folder_path = filedialog.askdirectory(initialdir=initial_dir)
-        ptp_num = folder_path.split('/')[-1]
-        if folder_path:
+        self.folder_path = filedialog.askdirectory(initialdir=initial_dir)
+        self.ptp_num = self.folder_path.split('/')[-1]
+        if self.folder_path:
             # Filter files with .txt and .png extensions
-            txt_files = [f for f in os.listdir(folder_path) if f.endswith('.txt') and ptp_num in f]
-            png_files = [f for f in os.listdir(folder_path) if f.endswith('.png') and ptp_num in f]
+            txt_files = [f for f in os.listdir(self.folder_path) if f.endswith('.txt') and self.ptp_num in f]
+            png_files = [f for f in os.listdir(self.folder_path) if f.endswith('.png') and self.ptp_num in f]
 
             # Assuming only one txt and one png file
             if len(txt_files) == 1 and len(png_files) == 1:
-                txt_file = os.path.join(folder_path, txt_files[0])
-                png_file = os.path.join(folder_path, png_files[0])
+                txt_file = os.path.join(self.folder_path, txt_files[0])
+                png_file = os.path.join(self.folder_path, png_files[0])
 
                 # Parse and process the text file
                 data = []
@@ -63,9 +68,11 @@ class VO2_QC:
                 self.df = pd.DataFrame(data, columns=['Index', 'Value'])
                 self.df.set_index('Index', inplace=True)
 
-                # Export DataFrame to CSV in the same folder as txt and png files
-                csv_file = os.path.join(folder_path, f'{ptp_num}_dataframe.csv')
-                self.csv_file = csv_file
+                # Export DataFrame to CSV to the edited folder
+                self.edited_path = os.path.join("/".join(self.folder_path.split('/')[:-2]), 'edited', self.ptp_num)    
+                if not os.path.exists(self.edited_path):
+                    os.makedirs(self.edited_path)
+                self.csv_file = os.path.join(self.edited_path, f'{self.ptp_num}_dataframe.csv')
                 self.df.to_csv(self.csv_file)
 
                 # Display the image
