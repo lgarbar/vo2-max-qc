@@ -44,42 +44,52 @@ class VO2_QC:
         self.folder_path = filedialog.askdirectory(initialdir=initial_dir)
         self.ptp_num = self.folder_path.split('/')[-1]
         if self.folder_path:
-            # Filter files with .txt and .png extensions
-            txt_files = [f for f in os.listdir(self.folder_path) if f.endswith('.txt') and self.ptp_num in f]
-            png_files = [f for f in os.listdir(self.folder_path) if f.endswith('.png') and self.ptp_num in f]
+            # If scoring a file for the first time
+            if 'edited' not in self.folder_path:
+                # Filter files with .txt extensions
+                txt_files = [f for f in os.listdir(self.folder_path) if f.endswith('.txt') and self.ptp_num in f]
 
-            # Assuming only one txt and one png file
-            if len(txt_files) == 1 and len(png_files) == 1:
-                txt_file = os.path.join(self.folder_path, txt_files[0])
+                # Assuming only one txt and one png file
+                if len(txt_files) == 1:
+                    txt_file = os.path.join(self.folder_path, txt_files[0])
+
+                    # Parse and process the text file
+                    data = []
+                    with open(txt_file, 'r') as file:
+                        for line in file:
+                            line = line.strip()
+                            if len(line.split(':')) > 1:
+                                key, value = line.split(':')
+                                key = self.format_index(key)
+                                data.append([key] + [value.strip()])
+
+                    # Store data in a DataFrame
+                    self.df = pd.DataFrame(data, columns=['Index', 'Value'])
+                    self.df.set_index('Index', inplace=True)
+
+                    # Export DataFrame to CSV to the edited folder
+                    self.edited_path = os.path.join("/".join(self.folder_path.split('/')[:-2]), 'edited', self.ptp_num)    
+                    if not os.path.exists(self.edited_path):
+                        os.makedirs(self.edited_path)
+                    self.csv_file = os.path.join(self.edited_path, f'{self.ptp_num}_dataframe.csv')
+                    self.df.to_csv(self.csv_file)
+                
+            # If rescoring an edited file  
+            else:
+                self.edited_path = self.folder_path
+                self.csv_file = os.path.join(self.edited_path, f'{self.ptp_num}_dataframe.csv')
+                self.folder_path = os.path.join("/".join(self.folder_path.split('/')[:-2]), 'data', self.ptp_num)
+                
+            # parse for .png files
+            png_files = [f for f in os.listdir(self.folder_path) if f.endswith('.png') and self.ptp_num in f]
+            if len(png_files) == 1:
                 png_file = os.path.join(self.folder_path, png_files[0])
 
-                # Parse and process the text file
-                data = []
-                col_len = 0
-                with open(txt_file, 'r') as file:
-                    for line in file:
-                        line = line.strip()
-                        if len(line.split(':')) > 1:
-                            key, value = line.split(':')
-                            key = self.format_index(key)
-                            data.append([key] + [value.strip()])
+            # Display the image
+            self.display_image(png_file)
 
-                # Store data in a DataFrame
-                self.df = pd.DataFrame(data, columns=['Index', 'Value'])
-                self.df.set_index('Index', inplace=True)
-
-                # Export DataFrame to CSV to the edited folder
-                self.edited_path = os.path.join("/".join(self.folder_path.split('/')[:-2]), 'edited', self.ptp_num)    
-                if not os.path.exists(self.edited_path):
-                    os.makedirs(self.edited_path)
-                self.csv_file = os.path.join(self.edited_path, f'{self.ptp_num}_dataframe.csv')
-                self.df.to_csv(self.csv_file)
-
-                # Display the image
-                self.display_image(png_file)
-
-                # Display the DataFrame in the treeview
-                self.display_dataframe()
+            # Display the DataFrame in the treeview
+            self.display_dataframe()
 
     def format_index(self, index):
         if 'O' in index:
