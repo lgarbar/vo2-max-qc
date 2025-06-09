@@ -1,0 +1,11 @@
+name: vo2-max-qc
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pandas
+  - pyqt
+  - pip
+  - pip:
+    - pillow
