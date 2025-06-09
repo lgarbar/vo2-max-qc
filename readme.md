@@ -25,7 +25,6 @@
    ```
 
 You're now ready to run the application!
-   ```
 
 ## Usage
 
@@ -34,21 +33,39 @@ To run the application:
 ### Command-line options:
 
 - `--verbose`: Show all rows/basenames (default behavior is to only show rows with bad_vals=True)
+- `--show-all`: Show all rows including those that have been viewed
+
+### File Selection:
+
+When you start the application, you will be prompted to:
+1. Select a CSV file containing your data
+2. Select a directory containing the corresponding image files
 
 ### Navigation:
 
 - Use the 'Previous' and 'Next' buttons or left/right arrow keys to move between entries
 - Use the 'Select' button to choose a specific entry by basename
+- Use up/down arrow keys to navigate between cells in the table
 
 ### Editing:
 
 - Double-click on a cell in the 'Value' column to edit directly in the table
 - Use the 'Edit' button to open a dialog box for editing the selected cell
 - Press Enter or click outside the cell to confirm edits
+- Edits are automatically tracked with your initials and marked as edited
+
+### Progress Tracking:
+
+- A progress bar at the top of the window shows your progress through the dataset
+- The progress bar changes color from red to yellow to green as you progress
+- Files are automatically marked as viewed when you load them
 
 ### Saving:
 
-Edits are automatically saved to a new CSV file with '_edited' appended to the original filename.
+Edits are automatically saved to a new CSV file with '_edited' appended to the original filename. The edited file includes additional columns:
+- `edited`: Boolean flag indicating if the row has been edited
+- `editor`: Initials of the person who made the edits
+- `viewed`: Boolean flag indicating if the row has been viewed
 
 ## Customization
 
